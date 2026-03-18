@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Score Entry</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Department of Computer Science</h1>
+  <h2>School of Engineering - Central Asian University</h2>
+  <h3>Embedded & Autonomous Systems - Project Scores</h3>
+</header>
+
+<section>
+  <h2>Enter Student Scores</h2>
+  <form id="scoreForm">
+    <label>Student Name: <input type="text" id="studentName" required></label>
+    <label>Project Name: <input type="text" id="projectName" required></label>
+    <label>Proposal (10%): <input type="number" id="proposal" min="0" max="100" required></label>
+    <label>Progress 1 (10%): <input type="number" id="progress1" min="0" max="100" required></label>
+    <label>Progress 2 (20%): <input type="number" id="progress2" min="0" max="100" required></label>
+    <label>Final Demo (35%): <input type="number" id="finalDemo" min="0" max="100" required></label>
+    <label>Presentation (25%): <input type="number" id="presentation" min="0" max="100" required></label>
+    <button type="submit">Calculate</button>
+  </form>
+
+  <div id="result" class="result-box"></div>
+</section>
+
+<section>
+  <a href="index.html" class="btn">Back to Home</a>
+</section>
+
+<script>
+document.getElementById('scoreForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('studentName').value;
+  const project = document.getElementById('projectName').value;
+  const proposal = Number(document.getElementById('proposal').value);
+  const progress1 = Number(document.getElementById('progress1').value);
+  const progress2 = Number(document.getElementById('progress2').value);
+  const finalDemo = Number(document.getElementById('finalDemo').value);
+  const presentation = Number(document.getElementById('presentation').value);
+
+  // Calculate total score
+  const total = (proposal*0.1) + (progress1*0.1) + (progress2*0.2) + (finalDemo*0.35) + (presentation*0.25);
+
+  // Determine status
+  let status = '';
+  let colorClass = '';
+  if(total >= 70){
+    status = 'Accepted';
+    colorClass = 'accepted';
+  } else if(total >= 50){
+    status = 'Modification Required';
+    colorClass = 'modification';
+  } else{
+    status = 'Rejected';
+    colorClass = 'rejected';
+  }
+
+  document.getElementById('result').innerHTML = `
+    <h3>Results for ${name} - ${project}</h3>
+    <p>Total Score: <strong>${total.toFixed(2)}</strong></p>
+    <p>Status: <span class="${colorClass}">${status}</span></p>
+  `;
+});
+</script>
+</body>
+</html>
