@@ -1,55 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Embedded & Autonomous Systems Projects</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Embedded & Autonomous Systems Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1b2a;
+  --surface: #1b263b;
+  --border: #415a77;
+  --text: #e0e1dd;
+  --text-sec: #a5c9ca;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+}
+
+body {
+  font-family:'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+  transition: background 0.3s;
+}
+
+.container { max-width:1280px; margin:0 auto; padding:2rem 1rem; }
+
+header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding-bottom:1.5rem; margin-bottom:2rem; border-bottom:1px solid var(--border);
+}
+.header-left { font-size:0.95rem; font-weight:600; color:var(--text-sec); }
+.header-center h1 { font-size:1.75rem; font-weight:700; letter-spacing:-0.025em; }
+.header-center p { font-size:0.95rem; font-weight:500; color:var(--text-sec); margin-top:0.25rem; }
+.logo img { height:3.25rem; width:auto; cursor:pointer; }
+
+.weights {
+  display:flex; flex-wrap:wrap; gap:1.25rem; background:var(--surface);
+  padding:1.25rem; border-radius:1rem; border:1px solid var(--border);
+  margin-bottom:2rem; font-size:0.95rem; font-weight:500; box-shadow:0 2px 5px rgba(0,0,0,0.2); justify-content:center;
+}
+.weights > div {
+  background: #627d98; padding:0.5rem 1rem; border-radius:9999px; color:#e0e1dd; font-weight:600;
+}
+
+.card { background:var(--surface); border-radius:1rem; border:1px solid var(--border); overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.3); }
+table { width:100%; border-collapse:collapse; font-size:0.95rem; }
+th, td { padding:1rem 1.25rem; text-align:left; position: relative; transition: all 0.3s; }
+th { background: #415a77; font-weight:600; color: var(--text-sec); text-transform:uppercase; font-size:0.8rem; letter-spacing:0.05em; }
+
+tr { cursor:pointer; border-bottom:1px solid var(--border); transition: transform 0.2s; }
+
+tr:hover { transform: scale(1.02); }
+
+td::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  left: 0; top: 0;
+  background: rgba(59,130,246,0.15);
+  width: 0%;
+  transition: width 0.3s ease;
+  border-radius: 6px;
+  z-index: -1;
+}
+
+td:hover::after { width: 100%; }
+
+.status {
+  display:inline-block; padding:0.35rem 0.85rem; border-radius:9999px;
+  font-size:0.8rem; font-weight:600;
+  transition: all 0.3s;
+}
+
+.status-accepted { background: linear-gradient(90deg,#38b000,#74c69d); color:#fff; }
+.status-modify { background: linear-gradient(90deg,#ff6b6b,#ff8787); color:#fff; }
+.status-discuss { background: linear-gradient(90deg,#ffd60a,#ffec99); color:#000; }
+
+/* Unique project row colors for 17 projects */
+tr:nth-child(1) { background:#1b263b; }
+tr:nth-child(2) { background:#243447; }
+tr:nth-child(3) { background:#2c3a52; }
+tr:nth-child(4) { background:#34415e; }
+tr:nth-child(5) { background:#3c4769; }
+tr:nth-child(6) { background:#445074; }
+tr:nth-child(7) { background:#4c587f; }
+tr:nth-child(8) { background:#54608a; }
+tr:nth-child(9) { background:#5c6895; }
+tr:nth-child(10){ background:#6471a0; }
+tr:nth-child(11){ background:#6c79ab; }
+tr:nth-child(12){ background:#7482b6; }
+tr:nth-child(13){ background:#7c8ac1; }
+tr:nth-child(14){ background:#8493cc; }
+tr:nth-child(15){ background:#8c9bd7; }
+tr:nth-child(16){ background:#94a4e2; }
+tr:nth-child(17){ background:#9caef0; }
+
+/* Modal */
+.modal { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:50; backdrop-filter:blur(5px);}
+.modal-content { background:var(--surface); border-radius:1.25rem; width:100%; max-width:540px; margin:1rem; box-shadow:0 20px 25px rgba(0,0,0,0.3); overflow:hidden; border:1px solid var(--border);}
+.modal-header { padding:1.5rem 2rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.modal-header h2 { font-size:1.4rem; font-weight:700; }
+.close { font-size:1.6rem; cursor:pointer; color:var(--text-sec); transition: color 0.15s; }
+.close:hover { color:#fff; }
+.modal-body { padding:2rem; }
+
+.marks-row { display:flex; justify-content:space-between; margin-bottom:1rem; }
+.marks-row div { background:#627d98; padding:0.5rem 0.8rem; border-radius:0.5rem; color:#e0e1dd; font-weight:600; text-align:center; flex:1; margin-right:0.5rem; }
+.marks-row div:last-child { margin-right:0; }
+
+.detail-row { display:grid; grid-template-columns:1fr 2fr; gap:1rem; padding:0.85rem 0; border-bottom:1px solid #627d98; }
+.detail-row:last-child { border-bottom:none; }
+.detail-row dt { font-weight:600; color:var(--text-sec); }
+input, select { width:100%; padding:0.75rem 1rem; border:1px solid #627d98; border-radius:0.6rem; font-size:0.95rem; transition:border-color 0.15s, box-shadow 0.15s; background:#0d1b2a; color:#e0e1dd;}
+input:focus, select:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(59,130,246,0.3); }
+.total-row { margin-top:1.5rem; padding-top:1.25rem; border-top:2px dashed #627d98; font-size:1.15rem; font-weight:700; }
+.btn { padding:0.75rem 1.5rem; background:var(--primary); color:white; border:none; border-radius:0.6rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
+.btn:hover { background:var(--primary-dark); transform:translateY(-1px); }
+.btn-outline { background:transparent; border:1px solid #627d98; color:var(--text); }
+.btn-outline:hover { background:#415a77; color:white; }
+
+</style>
 </head>
 <body>
+
+<div class="container">
 <header>
-  <h1>Department of Computer Science</h1>
-  <h2>School of Engineering - Central Asian University</h2>
-  <h3>Embedded & Autonomous Systems - Project Status</h3>
+  <div class="header-left">Computer Science Department</div>
+  <div class="header-center">
+    <h1>Embedded & Autonomous Systems</h1>
+    <p>Semester Projects, Demo & Presentation due in <b>15th Week</b></p>
+  </div>
+  <div class="logo">
+    <img src="https://github.com/backy4u/embedded-projects/raw/main/abc.png" alt="University Logo">
+  </div>
 </header>
 
-<section>
-  <h2>Student Project Status</h2>
-  <table id="projectStatus">
+<div class="weights">
+  <div>Proposal: <b>10%</b></div>
+  <div>Progress 1: <b>15%</b></div>
+  <div>Progress 2: <b>15%</b></div>
+  <div>Final Demo: <b>40%</b></div>
+  <div>Presentation: <b>20%</b></div>
+</div>
+
+<div class="card">
+  <table>
     <thead>
       <tr>
-        <th>Student Name</th>
+        <th>#</th>
         <th>Project Name</th>
         <th>Status</th>
       </tr>
     </thead>
-    <tbody>
-      <!-- Example data, you can update this -->
-      <tr>
-        <td>Muhammad Bilal Qureshi</td>
-        <td>Autonomous Delivery Robot</td>
-        <td class="accepted">Accepted</td>
-      </tr>
-      <tr>
-        <td>Aliya Karimova</td>
-        <td>Obstacle Avoidance Drone</td>
-        <td class="modification">Modification Required</td>
-      </tr>
-      <tr>
-        <td>Jasur Tursunov</td>
-        <td>Smart Traffic Light</td>
-        <td class="rejected">Rejected</td>
-      </tr>
-    </tbody>
+    <tbody id="projectTable"></tbody>
   </table>
-</section>
+</div>
+</div>
 
-<section>
-  <a href="scores.html" class="btn">Enter Scores & Calculate</a>
-</section>
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="title"></h2>
+      <span class="close" onclick="closeModal()">×</span>
+    </div>
+    <div class="modal-body">
+      <dl class="detail-row"><dt>Members</dt><dd id="members"></dd></dl>
+      <dl class="detail-row"><dt>IDs</dt><dd id="ids"></dd></dl>
 
-<footer>
-  <p>&copy; 2026 Central Asian University - Computer Science Department</p>
-</footer>
+      <!-- Marks distribution row -->
+      <div class="marks-row">
+        <div>Proposal 10%</div>
+        <div>Progress 1 15%</div>
+        <div>Progress 2 15%</div>
+        <div>Final Demo 40%</div>
+        <div>Presentation 20%</div>
+      </div>
+
+      <div class="detail-row"><dt>Proposal</dt><dd><input type="number" id="proposal" min="0" max="100"></dd></div>
+      <div class="detail-row"><dt>Progress 1</dt><dd><input type="number" id="p1" min="0" max="100"></dd></div>
+      <div class="detail-row"><dt>Progress 2</dt><dd><input type="number" id="p2" min="0" max="100"></dd></div>
+      <div class="detail-row"><dt>Final Demo</dt><dd><input type="number" id="final" min="0" max="100"></dd></div>
+      <div class="detail-row"><dt>Presentation</dt><dd><input type="number" id="presentation" min="0" max="100"></dd></div>
+      <div class="total-row">Total: <span id="total">0</span> %</div>
+      <div style="margin-top:1.75rem;">
+        <label style="font-weight:600; display:block; margin-bottom:0.5rem;">Status</label>
+        <select id="statusSelect">
+          <option value="Accepted">Accepted</option>
+          <option value="Modify">Modify</option>
+          <option value="Discuss">Discuss</option>
+        </select>
+      </div>
+      <div style="margin-top:2rem; display:flex; gap:1rem; justify-content:flex-end;">
+        <button class="btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn" onclick="saveData()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentIndex=null;
+const modal=document.getElementById("modal");
+let projects=JSON.parse(localStorage.getItem("projects"))||[
+  {name:"AI Hardware Assistant Based on Raspberry Pi", members:"Dmitriy Taldonov, Sayida'zamxon Rasulxo'jayev, Alisher Babadjanov, Temurbek Masksudov, Umidjon Gafurov", ids:"230350,230020,2302371,210721,230400", status:"Accepted"},
+  {name:"Autonomous Wireless Signal Detection and Mapping Robot", members:"Same Team", ids:"230350,230020,2302371,210721,230400", status:"Accepted"},
+  {name:"Line Following Robot with PID Optimization", members:"Xikamtova Nozima, Sharapova Elixabet, Nazarova Munisa", ids:"230150,240372,230070", status:"Accepted"},
+  {name:"Project 4", members:"Team 4", ids:"230001,230002", status:"Accepted"},
+  {name:"Project 5", members:"Team 5", ids:"230003,230004", status:"Accepted"},
+  {name:"Project 6", members:"Team 6", ids:"230005,230006", status:"Accepted"},
+  {name:"Project 7", members:"Team 7", ids:"230007,230008", status:"Accepted"},
+  {name:"Project 8", members:"Team 8", ids:"230009,230010", status:"Accepted"},
+  {name:"Project 9", members:"Team 9", ids:"230011,230012", status:"Accepted"},
+  {name:"Project 10", members:"Team 10", ids:"230013,230014", status:"Accepted"},
+  {name:"Project 11", members:"Team 11", ids:"230015,230016", status:"Accepted"},
+  {name:"Project 12", members:"Team 12", ids:"230017,230018", status:"Accepted"},
+  {name:"Project 13", members:"Team 13", ids:"230019,230020", status:"Accepted"},
+  {name:"Project 14", members:"Team 14", ids:"230021,230022", status:"Accepted"},
+  {name:"Project 15", members:"Team 15", ids:"230023,230024", status:"Accepted"},
+  {name:"Project 16", members:"Team 16", ids:"230025,230026", status:"Accepted"},
+  {name:"Project 17", members:"Team 17", ids:"230027,230028", status:"Accepted"}
+];
+
+function renderTable(){
+  const tbody=document.getElementById("projectTable");
+  tbody.innerHTML="";
+  projects.forEach((p,i)=>{
+    let statusClass="status-accepted";
+    if(p.status==="Modify") statusClass="status-modify";
+    if(p.status==="Discuss") statusClass="status-discuss";
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${i+1}</td><td>${p.name}</td><td><span class="status ${statusClass}">${p.status}</span></td>`;
+    tr.onclick=()=>openModal(i);
+    tbody.appendChild(tr);
+  });
+}
+
+function openModal(i){
+  currentIndex=i;
+  const p=projects[i];
+  modal.style.display="flex";
+  document.getElementById("title").textContent=p.name;
+  document.getElementById("members").textContent=p.members;
+  document.getElementById("ids").textContent=p.ids;
+  document.getElementById("proposal").value=p.proposal??0;
+  document.getElementById("p1").value=p.p1??0;
+  document.getElementById("p2").value=p.p2??0;
+  document.getElementById("final").value=p.final??0;
+  document.getElementById("presentation").value=p.presentation??0;
+  document.getElementById("statusSelect").value=p.status;
+  calculateTotal();
+}
+
+function calculateTotal(){
+  const sum=Number(document.getElementById("proposal").value||0)+
+            Number(document.getElementById("p1").value||0)+
+            Number(document.getElementById("p2").value||0)+
+            Number(document.getElementById("final").value||0)+
+            Number(document.getElementById("presentation").value||0);
+  document.getElementById("total").textContent=sum;
+}
+
+document.querySelectorAll("#modal input").forEach(el=>el.addEventListener("input",calculateTotal));
+
+function saveData(){
+  const p=projects[currentIndex];
+  p.proposal=Number(document.getElementById("proposal").value);
+  p.p1=Number(document.getElementById("p1").value);
+  p.p2=Number(document.getElementById("p2").value);
+  p.final=Number(document.getElementById("final").value);
+  p.presentation=Number(document.getElementById("presentation").value);
+  p.status=document.getElementById("statusSelect").value;
+  localStorage.setItem("projects",JSON.stringify(projects));
+  closeModal();
+  renderTable();
+}
+
+function closeModal(){ modal.style.display="none"; }
+
+renderTable();
+document.querySelector(".logo").addEventListener("dblclick",()=>{
+  document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"":"dark";
+});
+</script>
+
 </body>
 </html>
